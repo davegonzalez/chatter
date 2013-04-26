@@ -1,0 +1,7 @@
+Chatter!
+
+This was a project given to me where I was given a an HTML page with inactive elements. I was also given three helper functions display, fetch and send. I had to write a new file to replace those three helper functions, using Javascript, jQuery and ajax. 
+
+Known issues:
+- the username prompt is called twice, still figuring out how to access the username attribute from the first call
+- no CSS styling - this is basically how it looked from the get-go, with the exception of the text change of "Borken Chat" to "Chatter".

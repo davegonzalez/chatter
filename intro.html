@@ -1,0 +1,99 @@
+
+<html>
+  <head>
+   <script src="http://chatbuilder.herokuapp.com/ChatBuilder.js"></script> 
+
+<script>
+/* Deletes function helpers */
+delete Chat.display
+delete Chat.send
+delete Chat.fetch
+
+function goChat() {
+
+  /* Changes h2 text :D */
+  $('h2').replaceWith('<h2>Chatter!</h2>') 
+
+  /* Retrieves user's name */
+  var username = prompt("What is your name?");
+
+  /* Replaces the Chat.display helper */
+  function show(str) {
+    $('ul').append('<li>' + str + '</li>');
+  } 
+
+  /* Removes the oldest <li> element */
+  function deleteMessage() {
+    $('ul > li:first').fadeOut("normal", function() {
+      $(this).remove();
+    });
+  }
+
+  /* Replaces the Chat.send helper */
+  var send = function(input) {
+    var inputText = '{"text" : "' + username + ": " + input + '"}';
+  
+    $.ajax({
+        type: "POST",
+        url: "https://api.parse.com/1/classes/chats",
+        data: inputText,
+        username: 'name',
+        dataType: 'json',
+        success: function () { 
+          console.log("We have liftoff!") 
+        }
+    })
+  }
+
+  /* Enables the 'send' button to send messages */
+    $("button").removeAttr("disabled")
+    $("button").click (function() {
+    var message = $("input").val();
+    send(message);
+    /* console.log(message); For testing purposes */
+    $("input").val("");
+  })
+
+  /* Replaces the Chat.fetch helper */
+  function getIt() {
+    $.get("https://api.parse.com/1/classes/chats", 
+      {order: 'createdAt'},
+        function(chatMessages) {
+          $.each([chatMessages.results], function(index) {
+            setInterval(function() {
+            show(chatMessages.results[index].text); 
+            
+            /* Starts deleting oldest messages once li hits 10 */
+            if ($('li').length == 10) {
+              deleteMessage();
+            }
+
+            /* Resets the index counter */
+            if (index + 1 == chatMessages.results.length) {
+              index = 0;
+            }
+            index++;
+          }, 3000);
+        })
+      } 
+    )}
+  getIt();  
+  }
+$(document).ready(goChat)
+</script>
+
+  </head>
+  <body>
+
+    <h2>Borken Chat</h2>
+
+    <input class="draft" type="text"/> <button class="send" disabled>send</button>
+
+    <ul class="messages">
+      <li>mysterious_guide: Hey there! Let's build a chat application.</li>
+      <li>mysterious_guide: Right now, there's actually no functionality in this chat client--it's just an inert page full of pre-written HTML that's being rendered by your browser.
+      <li>mysterious_guide: but you can fix that--try looking at the page source to see how this page works.</li>
+    </ul>
+    
+  </body>
+</html>
